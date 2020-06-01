@@ -21,7 +21,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = capacity
+        self.data = [None] * capacity
 
 
     def get_num_slots(self):
@@ -52,8 +53,13 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
-
-        # Your code here
+        hash = 0xcbf29ce484222325 # decimal: 14695981039346656037
+        fnv_64_prime = 0x00000100000001B3 # decimal: 1099511628211
+        uint64_max = 2 ** 64
+        for x in key:
+            hash = hash ^ ord(x)
+            hash = (hash * fnv_64_prime) % uint64_max
+        return hash
 
 
     def djb2(self, key):
@@ -62,7 +68,10 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hash = 5381
+        for x in key:
+            hash = ((hash << 5) + hash) + ord(x)
+        return hash & 0xFFFFFFFF
 
 
     def hash_index(self, key):
@@ -70,8 +79,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -81,7 +90,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        slot = self.hash_index(key)
+        self.data[slot] = HashTableEntry(key, value)
 
 
     def delete(self, key):
@@ -92,7 +102,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        self.put(key, None)
 
 
     def get(self, key):
@@ -103,7 +113,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        slot = self.hash_index(key)
+        hash_entry = self.data[slot]
+
+        if hash_entry is not None:
+            return hash_entry.value
+
+        return None
 
 
     def resize(self, new_capacity):
@@ -151,3 +167,15 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+    print(ht.djb2("line_1"))
+    print(ht.fnv1("line_1"))
+    print(ht.hash_index("line_1"))
+
+    print(ht.djb2("line_9"))
+    print(ht.fnv1("line_9"))
+    print(ht.hash_index("line_9"))
+
+    print(ht.djb2("line_10"))
+    print(ht.fnv1("line_10"))
+    print(ht.hash_index("line_10"))
