@@ -1,8 +1,17 @@
-# Your code here
-
+cache = {}
 
 def expensive_seq(x, y, z):
-    # Your code here
+    if x <= 0:
+        return y + z
+
+    key = (x, y, z)
+
+    if key not in cache:   # if (x, y, z) is not a key in the cache
+        cache[key] = expensive_seq(x - 1, y + 1, z) \
+                     + expensive_seq(x - 2, y + 2, z * 2) \
+                     + expensive_seq(x - 3, y + 3, z * 3)
+
+    return cache[key]
 
 
 
